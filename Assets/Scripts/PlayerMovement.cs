@@ -5,6 +5,7 @@ public class PlayerMovement : MonoBehaviour
     public float maxSpeed = 5f;
     public float acceleration = 20f;
     public float deceleration = 10f;
+    public float carryingSpeedMultiplier = 0.7f; // Reduce speed when carrying an object
 
     [SerializeField] private float currentSpeed;
 
@@ -12,11 +13,13 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 velocity;
     private Vector3 verticalVelocity;
     private Transform cameraTransform;
+    private FirstPersonCamera fpCamera;
 
     private void Start()
     {
         controller = GetComponent<CharacterController>();
         cameraTransform = GetComponentInChildren<Camera>().transform;
+        fpCamera = cameraTransform.GetComponent<FirstPersonCamera>();
     }
 
     private void Update()
@@ -24,13 +27,13 @@ public class PlayerMovement : MonoBehaviour
         HandleWASDMovement();
         HandleVerticalMovement();
 
-        // Combine WASD and vertical movements
         Vector3 combinedVelocity = velocity + verticalVelocity;
 
-        // Limit overall speed
-        if (combinedVelocity.magnitude > maxSpeed)
+        float speedMultiplier = fpCamera.IsCarryingObject() ? carryingSpeedMultiplier : 1f;
+
+        if (combinedVelocity.magnitude > maxSpeed * speedMultiplier)
         {
-            combinedVelocity = combinedVelocity.normalized * maxSpeed;
+            combinedVelocity = combinedVelocity.normalized * maxSpeed * speedMultiplier;
         }
 
         currentSpeed = combinedVelocity.magnitude;

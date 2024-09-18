@@ -5,12 +5,16 @@ public class FirstPersonCamera : MonoBehaviour
     public float mouseSensitivity = 2f;
     public float maxLookUpAngle = 90f;
     public float maxLookDownAngle = 90f;
-    public float repairRange = 5f;
+    public float interactionRange = 5f;
+    public float pickupDistance = 1f;
+    public float pickupRightOffset = 0.5f;
 
     private float xRotation = 0f;
     private Transform playerTransform;
     private Camera cam;
-    private BoltRepair currentTarget;
+    private BoltRepair currentBoltTarget;
+    private PickupableObject currentPickupTarget;
+    private PickupableObject pickedUpObject;
 
     private void Start()
     {
@@ -23,7 +27,18 @@ public class FirstPersonCamera : MonoBehaviour
     private void Update()
     {
         HandleMouseLook();
-        HandleRepairInput();
+        HandleInteraction();
+
+        if (pickedUpObject != null)
+        {
+            UpdatePickedUpObjectPosition();
+        }
+
+        // Handle drop input regardless of highlighting
+        if (Input.GetKeyDown(KeyCode.G) && pickedUpObject != null)
+        {
+            DropObject();
+        }
     }
 
     private void HandleMouseLook()
@@ -31,51 +46,122 @@ public class FirstPersonCamera : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        // Rotate the player horizontally
-        playerTransform.Rotate(Vector3.up * mouseX);
-
-        // Rotate the camera vertically
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -maxLookDownAngle, maxLookUpAngle);
+
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        playerTransform.Rotate(Vector3.up * mouseX);
     }
 
-    private void HandleRepairInput()
+    private void HandleInteraction()
     {
         Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, repairRange))
+        if (Physics.Raycast(ray, out hit, interactionRange))
         {
             BoltRepair boltRepair = hit.collider.GetComponent<BoltRepair>();
+            PickupableObject pickupable = hit.collider.GetComponent<PickupableObject>();
+
             if (boltRepair != null)
             {
-                if (currentTarget != boltRepair)
-                {
-                    if (currentTarget != null)
-                    {
-                        currentTarget.SetTargeted(false);
-                    }
-                    currentTarget = boltRepair;
-                    currentTarget.SetTargeted(true);
-                }
+                HandleBoltRepairInteraction(boltRepair);
+            }
+            else if (pickupable != null)
+            {
+                HandlePickupInteraction(pickupable);
             }
             else
             {
-                if (currentTarget != null)
-                {
-                    currentTarget.SetTargeted(false);
-                    currentTarget = null;
-                }
+                ClearInteractions();
             }
         }
         else
         {
-            if (currentTarget != null)
-            {
-                currentTarget.SetTargeted(false);
-                currentTarget = null;
-            }
+            ClearInteractions();
         }
+    }
+
+    private void HandleBoltRepairInteraction(BoltRepair boltRepair)
+    {
+        if (currentBoltTarget != boltRepair)
+        {
+            if (currentBoltTarget != null)
+            {
+                currentBoltTarget.SetTargeted(false);
+            }
+            currentBoltTarget = boltRepair;
+            currentBoltTarget.SetTargeted(true);
+        }
+
+        if (currentPickupTarget != null)
+        {
+            currentPickupTarget.SetTargeted(false);
+            currentPickupTarget = null;
+        }
+    }
+
+    private void HandlePickupInteraction(PickupableObject pickupable)
+    {
+        if (currentPickupTarget != pickupable)
+        {
+            if (currentPickupTarget != null)
+            {
+                currentPickupTarget.SetTargeted(false);
+            }
+            currentPickupTarget = pickupable;
+            currentPickupTarget.SetTargeted(true);
+        }
+
+        if (currentBoltTarget != null)
+        {
+            currentBoltTarget.SetTargeted(false);
+            currentBoltTarget = null;
+        }
+
+        if (Input.GetKeyDown(KeyCode.E) && pickedUpObject == null)
+        {
+            PickupObject(pickupable);
+        }
+    }
+
+    private void ClearInteractions()
+    {
+        if (currentBoltTarget != null)
+        {
+            currentBoltTarget.SetTargeted(false);
+            currentBoltTarget = null;
+        }
+
+        if (currentPickupTarget != null)
+        {
+            currentPickupTarget.SetTargeted(false);
+            currentPickupTarget = null;
+        }
+    }
+
+    private void UpdatePickedUpObjectPosition()
+    {
+        Vector3 targetPosition = transform.position + transform.forward * pickupDistance + transform.right * pickupRightOffset;
+        pickedUpObject.transform.position = Vector3.Lerp(pickedUpObject.transform.position, targetPosition, Time.deltaTime * 10f);
+        pickedUpObject.transform.rotation = Quaternion.Slerp(pickedUpObject.transform.rotation, transform.rotation, Time.deltaTime * 10f);
+    }
+
+    private void PickupObject(PickupableObject pickupable)
+    {
+        pickedUpObject = pickupable;
+        pickedUpObject.Pickup(transform);
+    }
+
+    private void DropObject()
+    {
+        Vector3 dropPosition = transform.position + transform.forward * 2f;
+        pickedUpObject.Drop(dropPosition);
+        pickedUpObject = null;
+    }
+
+    public bool IsCarryingObject()
+    {
+        return pickedUpObject != null;
     }
 }
