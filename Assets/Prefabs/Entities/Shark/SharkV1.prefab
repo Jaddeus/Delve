@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3308648217798758162}
   - component: {fileID: 7368478734161987339}
   - component: {fileID: 6084918485795126779}
+  - component: {fileID: -205883466225006664}
   m_Layer: 0
   m_Name: SharkV1
   m_TagString: Untagged
@@ -107,6 +108,30 @@ MonoBehaviour:
   attackRange: 2
   attackCooldown: 2
   damage: 20
+  animator: {fileID: 0}
+  animationSpeedMultiplier: 1
+  minSpeedForSwimming: 0.1
+--- !u!95 &-205883466225006664
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6520737968568702140}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 85b5415a0dd16804a880cc9179b9a7ea, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &6490610245429310766
 PrefabInstance:
   m_ObjectHideFlags: 0

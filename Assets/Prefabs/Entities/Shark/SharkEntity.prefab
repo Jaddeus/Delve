@@ -107,6 +107,9 @@ MonoBehaviour:
   attackRange: 2
   attackCooldown: 2
   damage: 20
+  animator: {fileID: 0}
+  animationSpeedMultiplier: 1
+  minSpeedForSwimming: 0.1
 --- !u!1 &7969662814354747341
 GameObject:
   m_ObjectHideFlags: 0

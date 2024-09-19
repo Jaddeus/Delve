@@ -21,6 +21,12 @@ public class SharkAI : Entity
     private Vector3 currentVelocity;
     private Quaternion targetRotation;
     private Rigidbody rb;
+    public Animator animator;
+    public float animationSpeedMultiplier = 1f;
+    public float minSpeedForSwimming = 0.1f;
+
+    private static readonly int IsSwimming = Animator.StringToHash("IsSwimming");
+    private static readonly int SwimSpeed = Animator.StringToHash("SwimSpeed");
 
     protected override void Start()
     {
@@ -28,8 +34,17 @@ public class SharkAI : Entity
         player = GameObject.FindGameObjectWithTag("Player").transform;
         SetNewPatrolTarget();
         rb = GetComponent<Rigidbody>();
-        rb.useGravity = false; // Disable gravity for underwater movement
-        rb.drag = 0.5f; // Add some drag to simulate water resistance
+        rb.useGravity = false;
+        rb.drag = 0.5f;
+
+        if (animator == null)
+        {
+            animator = GetComponentInChildren<Animator>();
+            if (animator == null)
+            {
+                Debug.LogWarning("No Animator component found on shark or its children. Animations will not play.");
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -53,6 +68,7 @@ public class SharkAI : Entity
 
         CheckPlayerDistance();
         ApplyMovement();
+        UpdateAnimation();
     }
 
     private void MoveTowards(Vector3 target, float speed)
@@ -120,6 +136,18 @@ public class SharkAI : Entity
         else
         {
             currentState = SharkState.Patrolling;
+        }
+    }
+
+    private void UpdateAnimation()
+    {
+        if (animator != null)
+        {
+            float speed = rb.velocity.magnitude;
+            bool isSwimming = speed > minSpeedForSwimming;
+
+            animator.SetBool(IsSwimming, isSwimming);
+            animator.SetFloat(SwimSpeed, speed * animationSpeedMultiplier);
         }
     }
 
