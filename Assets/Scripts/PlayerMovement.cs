@@ -6,7 +6,8 @@ public class PlayerMovement : MonoBehaviour
     public float acceleration = 20f;
     public float deceleration = 10f;
     public float carryingSpeedMultiplier = 0.7f; // Reduce speed when carrying an object
-
+    public float maxHealth = 100f;
+    private float currentHealth;
     [SerializeField] private float currentSpeed;
 
     private CharacterController controller;
@@ -20,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
         controller = GetComponent<CharacterController>();
         cameraTransform = GetComponentInChildren<Camera>().transform;
         fpCamera = cameraTransform.GetComponent<FirstPersonCamera>();
+        currentHealth = maxHealth;
     }
 
     private void Update()
@@ -87,5 +89,22 @@ public class PlayerMovement : MonoBehaviour
         Vector3 right = cameraTransform.right;
 
         return (forward * moveVertical + right * moveHorizontal).normalized;
+    }
+
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+        Debug.Log($"Player took {damage} damage. Current health: {currentHealth}");
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log("Player has died!");
+        // Implement death behavior (e.g., respawn, game over screen, etc.)
     }
 }
