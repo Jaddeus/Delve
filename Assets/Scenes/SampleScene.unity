@@ -324,7 +324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b541b5e447bf5842af618bcb2b22de5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityPrefab: {fileID: 6520737968568702140, guid: f9238fa48033bcd4abfe6fb19d34da90, type: 3}
+  entityPrefab: {fileID: 6520737968568702140, guid: fdf45fd9aad045f43bf4e4443b41b7f7, type: 3}
   spawnPosition: {x: 0, y: 25, z: 0}
 --- !u!4 &604764288
 Transform:
