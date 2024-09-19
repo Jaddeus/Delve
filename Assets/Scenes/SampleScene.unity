@@ -1575,6 +1575,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 7388562518624216061, guid: d8b6b7ef818eea94ea1b7c09ef894210, type: 3}
+      propertyPath: sprintSpeedMultiplier
+      value: 1.75
+      objectReference: {fileID: 0}
     - target: {fileID: 8813625496388983350, guid: d8b6b7ef818eea94ea1b7c09ef894210, type: 3}
       propertyPath: m_Enabled
       value: 0

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7188032387858200363}
   - component: {fileID: 3308648217798758162}
   - component: {fileID: 7368478734161987339}
-  - component: {fileID: 6084918485795126779}
+  - component: {fileID: 1341316942437358386}
   m_Layer: 0
   m_Name: SharkEntity
   m_TagString: Untagged
@@ -85,7 +85,7 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6084918485795126779
+--- !u!114 &1341316942437358386
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
