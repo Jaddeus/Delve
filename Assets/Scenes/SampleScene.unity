@@ -581,6 +581,9 @@ MonoBehaviour:
   minSize: 0.1
   highlightMaterial: {fileID: 2100000, guid: 868c611ee5f586647a69e96a69376bc4, type: 2}
   defaultMaterial: {fileID: 2100000, guid: 65c308f3d6c9f8f4d930aaca8ccf54c1, type: 2}
+  drainStamina: 1
+  staminaDrainRate: 15
+  minStaminaRequired: 5
 --- !u!1 &903768411
 GameObject:
   m_ObjectHideFlags: 0
@@ -824,6 +827,9 @@ MonoBehaviour:
   minSize: 0.1
   highlightMaterial: {fileID: 2100000, guid: 868c611ee5f586647a69e96a69376bc4, type: 2}
   defaultMaterial: {fileID: 2100000, guid: 65c308f3d6c9f8f4d930aaca8ccf54c1, type: 2}
+  drainStamina: 1
+  staminaDrainRate: 15
+  minStaminaRequired: 0
 --- !u!1 &1205999968
 GameObject:
   m_ObjectHideFlags: 0
@@ -1048,6 +1054,9 @@ MonoBehaviour:
   minSize: 0.1
   highlightMaterial: {fileID: 2100000, guid: 868c611ee5f586647a69e96a69376bc4, type: 2}
   defaultMaterial: {fileID: 2100000, guid: 65c308f3d6c9f8f4d930aaca8ccf54c1, type: 2}
+  drainStamina: 1
+  staminaDrainRate: 15
+  minStaminaRequired: 5
 --- !u!1 &1431939159
 GameObject:
   m_ObjectHideFlags: 0
@@ -1382,6 +1391,9 @@ MonoBehaviour:
   minSize: 0.1
   highlightMaterial: {fileID: 2100000, guid: 868c611ee5f586647a69e96a69376bc4, type: 2}
   defaultMaterial: {fileID: 2100000, guid: 65c308f3d6c9f8f4d930aaca8ccf54c1, type: 2}
+  drainStamina: 1
+  staminaDrainRate: 15
+  minStaminaRequired: 5
 --- !u!1 &2109525749
 GameObject:
   m_ObjectHideFlags: 0
@@ -1576,8 +1588,16 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 7388562518624216061, guid: d8b6b7ef818eea94ea1b7c09ef894210, type: 3}
+      propertyPath: minStaminaToSprint
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7388562518624216061, guid: d8b6b7ef818eea94ea1b7c09ef894210, type: 3}
       propertyPath: sprintSpeedMultiplier
       value: 1.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 7388562518624216061, guid: d8b6b7ef818eea94ea1b7c09ef894210, type: 3}
+      propertyPath: staminaRecoveryCooldown
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 8813625496388983350, guid: d8b6b7ef818eea94ea1b7c09ef894210, type: 3}
       propertyPath: m_Enabled
@@ -1596,6 +1616,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 184628945335816634, guid: c80c6d101693c374bb9db4210d470355, type: 3}
+      propertyPath: drainStamina
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 184628945335816634, guid: c80c6d101693c374bb9db4210d470355, type: 3}
+      propertyPath: staminaDrainRate
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 6244674313520819258, guid: c80c6d101693c374bb9db4210d470355, type: 3}
       propertyPath: m_Name
       value: BoltIn

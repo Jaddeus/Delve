@@ -5,6 +5,7 @@ using UnityEngine;
 public class NewStaminaDrainer : MonoBehaviour, IStaminaDrainer
 {
     public float staminaDrainRate = 5f; // Amount of stamina drained per second
+    public float minStaminaRequired = 2f; // Minimum stamina required to continue the interaction
     private bool isInteracting = false;
 
     // Implement IStaminaDrainer interface methods
@@ -16,6 +17,13 @@ public class NewStaminaDrainer : MonoBehaviour, IStaminaDrainer
     public bool IsInteracting()
     {
         return isInteracting;
+    }
+
+    // Method to check current stamina to see if the interaction can start
+    public bool CanStartInteraction(float currentStamina)
+    {
+        // Allow interaction to start if there's any stamina available
+        return currentStamina > 0;
     }
 
     // Method to start interaction

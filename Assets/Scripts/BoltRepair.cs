@@ -22,14 +22,21 @@ public class BoltRepair : MonoBehaviour, IStaminaDrainer
     public bool drainStamina = false;
     // Rate at which stamina is drained per second when interacting
     public float staminaDrainRate = 10f;
-
+    public float minStaminaRequired = 5f; // Minimum stamina required to continue repairing
     // Tracks whether the player is currently interacting with this bolt
     private bool isInteracting = false;
+    private PlayerMovement playerMovement; // Giving BoltRepair access to playerMovement
+
     // Initialize component references and store the original scale
     private void Start()
     {
         objectRenderer = GetComponent<Renderer>();
         originalScale = transform.localScale;
+        playerMovement = FindObjectOfType<PlayerMovement>();
+        if (playerMovement == null)
+        {
+            Debug.LogError("PlayerMovement not found in the scene. BoltRepair will not function correctly.");
+        }
     }
 
     private void Update()
@@ -59,15 +66,28 @@ public class BoltRepair : MonoBehaviour, IStaminaDrainer
         objectRenderer.material = targeted ? highlightMaterial : defaultMaterial;
     }
 
+    public bool CanStartInteraction(float currentStamina)
+    {
+        // Check if the player has enough stamina to continue repairing
+        return currentStamina > 0;
+    }
+
     // Shrink the bolt when being repaired
     private void Repair()
     {
-        isInteracting = true;
-        Vector3 newScale = transform.localScale - originalScale * (repairSpeed * Time.deltaTime);
-        transform.localScale = Vector3.Max(newScale, originalScale * minSize);
+        if (playerMovement != null && playerMovement.currentStamina > 0)
+        {
+            isInteracting = true;
+            Vector3 newScale = transform.localScale - originalScale * (repairSpeed * Time.deltaTime);
+            transform.localScale = Vector3.Max(newScale, originalScale * minSize);
 
-        // If the bolt is fully repaired, stop interaction
-        if (transform.localScale.x <= minSize * originalScale.x)
+            // If the bolt is fully repaired, stop interaction
+            if (transform.localScale.x <= minSize * originalScale.x)
+            {
+                StopInteraction();
+            }
+        }
+        else
         {
             StopInteraction();
         }

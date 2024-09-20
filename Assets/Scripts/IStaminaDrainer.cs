@@ -9,4 +9,7 @@ public interface IStaminaDrainer
 
     // Indicates whether the object is currently being interacted with
     bool IsInteracting();
+
+    // Checks the players current stamina
+    bool CanStartInteraction(float currentStamina);
 }

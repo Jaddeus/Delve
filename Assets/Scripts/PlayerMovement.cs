@@ -21,12 +21,14 @@ public class PlayerMovement : MonoBehaviour
     public float staminaDrainRate = 20f; // Amount of stamina drained per second while sprinting
     public float staminaRegenRate = 10f; // Amount of stamina regenerated per second when not sprinting
     public float sprintSpeedMultiplier = 1.5f; // Speed multiplier when sprinting
-    public float minStaminaToSprint = 10f; // Minimum stamina required to start sprinting
+    public float minStaminaToSprint = 1f; // Minimum stamina required to start sprinting
     public float currentStamina; // Amount of stamina the player currently has
     private bool isSprinting = false; // Sprint state
     // List to keep track of objects currently draining stamina
     private List<IStaminaDrainer> currentStaminaDrainers = new List<IStaminaDrainer>();
-
+    public float staminaRecoveryCooldown = 2f; // Time in seconds before stamina starts regenerating after hitting 0
+    private float staminaRecoveryTimer = 0f; // Timer to track cooldown
+    private bool isStaminaDepleted = false; // Flag to check if stamina was recently depleted
 
     // Reference to the CharacterController component
     private CharacterController controller;
@@ -155,7 +157,7 @@ public class PlayerMovement : MonoBehaviour
     private void HandleSprinting()
     {
         // Check if the player is pressing the sprint key (left shift) and has enough stamina
-        if (Input.GetKey(KeyCode.LeftShift) && currentStamina > minStaminaToSprint)
+        if (Input.GetKey(KeyCode.LeftShift) && currentStamina > minStaminaToSprint && !isStaminaDepleted)
         {
             isSprinting = true;
         }
@@ -175,10 +177,16 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // Method to drain stamina for other actions (e.g., completing objectives)
     public void DrainStamina(float amount)
     {
-        // Method to drain stamina for other actions (e.g., completing objectives)
         currentStamina = Mathf.Max(0, currentStamina - amount);
+        if (currentStamina == 0 && !isStaminaDepleted)
+        {
+            isStaminaDepleted = true;
+            staminaRecoveryTimer = 0f;
+            Debug.Log("Stamina depleted, starting recovery cooldown.");
+        }
     }
 
     public float GetCurrentStaminaPercentage()
@@ -199,12 +207,20 @@ public class PlayerMovement : MonoBehaviour
             var drainer = currentStaminaDrainers[i];
             if (drainer != null && drainer.IsInteracting())
             {
-                // Calculate stamina drain for this frame
-                totalDrain += drainer.GetStaminaDrainRate() * Time.deltaTime;
+                // Check if the interaction can continue based on current stamina
+                float drainAmount = drainer.GetStaminaDrainRate() * Time.deltaTime;
+                if (currentStamina - totalDrain > 0)
+                {
+                    totalDrain += Mathf.Min(drainAmount, currentStamina - totalDrain); ;
+                }
+                else
+                {
+                    // If not enough stamina, stop the interaction
+                    (drainer as MonoBehaviour)?.SendMessage("StopInteraction", SendMessageOptions.DontRequireReceiver);
+                }
             }
             else
             {
-                // Remove drainers that are no longer interacting or have been destroyed
                 currentStaminaDrainers.RemoveAt(i);
                 drainersRemoved = true;
             }
@@ -231,8 +247,24 @@ public class PlayerMovement : MonoBehaviour
     // Method to handle stamina regeneration
     private void RegenerateStamina()
     {
-        currentStamina = Mathf.Min(maxStamina, currentStamina + staminaRegenRate * Time.deltaTime);
-        Debug.Log($"Regenerating stamina. Current stamina: {currentStamina}");
+        if (isStaminaDepleted)
+        {
+            staminaRecoveryTimer += Time.deltaTime;
+            if (staminaRecoveryTimer >= staminaRecoveryCooldown)
+            {
+                isStaminaDepleted = false;
+                staminaRecoveryTimer = 0f;
+            }
+            else
+            {
+                return; // Don't regenerate stamina during cooldown
+            }
+        }
+        if (currentStamina < maxStamina)
+        {
+            currentStamina = Mathf.Min(maxStamina, currentStamina + staminaRegenRate * Time.deltaTime);
+            Debug.Log($"Regenerating stamina. Current stamina: {currentStamina}");
+        }
     }
 
     // Method to add a new stamina drainer
